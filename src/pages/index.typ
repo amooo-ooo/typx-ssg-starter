@@ -1,4 +1,4 @@
-#import "/src/components/typx.typ": h, component, meta
+#import "/src/components/typx.typ": component, meta
 
 #show: meta.with(title: "Minimal Typx Home", layout: "default")
 

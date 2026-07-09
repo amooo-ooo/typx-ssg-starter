@@ -1,4 +1,4 @@
-#import "/src/components/typx.typ": h, meta
+#import "/src/components/typx.typ": meta
 #show: meta.with(title: "Minimal Typx Blog", layout: "blog")
 
 = Building a Typst SSG

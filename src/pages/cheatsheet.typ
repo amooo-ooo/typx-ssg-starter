@@ -1,8 +1,6 @@
 #import "/src/components/typx.typ": h, component, meta
 #show: meta.with(title: "Typst Cheatsheet", layout: "default")
 
-#let typx-counter = component("/src/components/counter.ts", "typx-counter")
-
 #let example(code, scope: (:)) = {
   code
   eval(code.text, mode: "markup", scope: scope)

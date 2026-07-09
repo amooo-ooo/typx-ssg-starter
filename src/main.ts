@@ -1,4 +1,4 @@
-import { createRouter } from '../scripts/router/index.ts';
+import { createRouter } from '../scripts/router/index';
 
 /**
  * Initialise the modular router.

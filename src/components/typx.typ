@@ -2,7 +2,7 @@
 
 #let parse-selector(s) = {
   let (tag, id, classes) = ("div", none, ())
-  for m in s.matches(regex("(^|#|\.)([^#.\[\]]+)")) {
+  for m in s.matches(regex("(^|#|\\.)([^#.\\[\\]]+)")) {
     let (prefix, name) = m.captures
     if prefix == "" { tag = name }
     else if prefix == "." { classes.push(name) }
@@ -39,7 +39,7 @@
 }
 
 #let component(ts-path, element-name) = {
-  return (..args) => {
+  (..args) => {
     h("script", type: "module", "import '" + ts-path + "';")
     h(element-name, ..args.named())[#args.pos().join()]
   }
