@@ -139,19 +139,28 @@ Typst has a powerful native math engine. Surround inline math with `$`, or use i
 #example(```typst
 Inline Equation: $E = m c^2$
 
-Fractions: $ (a+b)/c $ or $ x/y $
+Fractions: $(a+b)/c$ or $x/y$
 
-Roots: $ sqrt(x) $ or $ root(3, x) $
+Roots: $sqrt(x)$ or $root(3, x)$
 
-Primes: $ f'(x) $ or $ f''(x) $
+Primes: $f'(x)$ or $f''(x)$
 
-Binomials: $ binom(n, k) $
+Binomials: $binom(n, k)$
 
-Vectors: $ vec(1, 2, 3) $
+Vectors: $vec(1, 2, 3)$
 
-Matrices: $ mat(1, 2; 3, 4) $
+Matrices: $mat(1, 2; 3, 4)$
 
-Cases: $ f(x) = cases(1 "if" x > 0, 0 "else") $
+Cases: $f(x) = cases(1 "if" x > 0, 0 "else")$
+
+Block Equations:
+$ sum_(k=1)^n k = (n(n+1)) / 2 $
+
+Multi-line Block:
+$ 
+  f(x) = x^2 + 2x + 1 \
+       = (x + 1)^2 
+$
 ```)
 
 #divider()
@@ -159,25 +168,25 @@ Cases: $ f(x) = cases(1 "if" x > 0, 0 "else") $
 Math supports advanced attachments, styling, alignment, and semantic grouping.
 
 #example(```typst
-Accents: $ hat(x), bar(y), diaer(u), vec(a) $
+Accents: $hat(x), bar(y), diaer(u), vec(a)$
 
-Under/Over: $ underbrace(x + y, z) $ or $ overbrace(a, b) $
+Under/Over: $underbrace(x + y, z)$ or $overbrace(a, b)$
 
-Attach: $ x_1^2 $ or $ scripts(sum)_1^2 $
+Attach: $x_1^2$ or $scripts(sum)_1^2$
 
-Left/Right Auto-scaling: $ lr(( x / y )) $
+Left/Right Auto-scaling: $lr(( x / y ))$
 
-Cancel: $ cancel(x) / cancel(x) = 1 $
+Cancel: $cancel(x) / cancel(x) = 1$
 
-Styles: $ cal(A), frak(B), bb(C) $
+Styles: $cal(A), frak(B), bb(C)$
 
-Sizes: $ display(x/y) != script(x/y) $
+Sizes: $display(x/y) != script(x/y)$
 
-Text Operator: $ op("argmax")_x f(x) $
+Text Operator: $op("argmax")_x f(x)$
 
-Variants: $ epsilon != epsilon.alt $
+Variants: $epsilon != epsilon.alt$
 
-Stretch: $ x stretch(=) y $
+Stretch: $x stretch(=) y$
 ```)
 
 #divider()
