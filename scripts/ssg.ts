@@ -1,7 +1,15 @@
 import { glob } from 'glob';
-import { mkdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile, stat } from 'fs/promises';
 import { join, dirname, basename } from 'path';
 import { $ } from 'bun';
+
+async function getMaxSharedMtime(cwd: string): Promise<number> {
+  const sharedFiles = await glob('src/**/*', { cwd, nodir: true, ignore: 'src/pages/**/*' });
+  const stats = await Promise.all(
+    sharedFiles.map(file => stat(join(cwd, file)).catch(() => null))
+  );
+  return stats.reduce((max: number, s) => Math.max(max, s?.mtimeMs ?? 0), 0);
+}
 
 /**
  * Extracts the body content from an HTML string.
@@ -43,29 +51,57 @@ function determineOutputPath(file: string): string {
 /**
  * Processes a single Typst file by compiling it and injecting it into the layout.
  */
-async function processTypstFile(file: string, pagesDir: string, layoutsDir: string, tempDir: string): Promise<void> {
+async function processTypstFile(file: string, pagesDir: string, layoutsDir: string, tempDir: string, maxSharedMtime: number = 0, printedWarnings: Set<string>): Promise<boolean> {
   const srcPath = join(pagesDir, file);
+  const outRelPath = determineOutputPath(file);
+  const finalOutPath = join(process.cwd(), '.typx', outRelPath);
+  
+  try {
+    const srcStat = await stat(srcPath);
+    const outStat = await stat(finalOutPath);
+    
+    if (outStat.mtimeMs >= srcStat.mtimeMs && outStat.mtimeMs >= maxSharedMtime) {
+      return false;
+    }
+  } catch {
+    // Proceed if output file doesn't exist
+  }
+
   const content = await readFile(srcPath, 'utf-8');
   
   let layoutHtml: string;
   try {
     layoutHtml = await getLayoutHtml(layoutsDir, content);
   } catch {
-    return;
+    return false;
   }
   
-  const tempSrcPath = join(tempDir, `${file.replace(/[/\\]/g, '_')}.typ`);
   const tempOutPath = join(tempDir, `${file.replace(/[/\\]/g, '_')}.html`);
-  console.log(`[INFO] Compiling ${file}...`);
-
-  await writeFile(tempSrcPath, content);
+  // No compiling log, just output success at the end
   
   try {
-    await $`typst compile --root ${process.cwd()} --format html --features html --input is_html=true ${tempSrcPath} ${tempOutPath}`;
-  } catch (error) {
+    const result = await $`typst compile --root ${process.cwd()} --format html --features html --input is_html=true ${srcPath} ${tempOutPath}`.quiet();
+    
+    if (result.stderr) {
+      const stderrStr = result.stderr.toString().replace(/\\\\\?\\/g, '');
+      const warnings = stderrStr.split(/\n\s*\n/);
+      for (const warning of warnings) {
+        const trimmed = warning.trim();
+        if (trimmed && !printedWarnings.has(trimmed)) {
+          printedWarnings.add(trimmed);
+          console.error(trimmed + '\n');
+        }
+      }
+    }
+  } catch (error: unknown) {
     console.error(`[ERROR] Typst compilation failed for ${file}. Ensure 'typst' is installed and on your PATH.`);
-    console.error(error instanceof Error ? error.message : String(error));
-    return;
+    const err = error as { stderr?: string | Buffer };
+    if (err && err.stderr) {
+      console.error(err.stderr.toString().trim());
+    } else {
+      console.error(error instanceof Error ? error.message : String(error));
+    }
+    return false;
   }
   
   const typstHtml = await readFile(tempOutPath, 'utf-8');
@@ -79,20 +115,20 @@ async function processTypstFile(file: string, pagesDir: string, layoutsDir: stri
     finalHtml = finalHtml.replace(/<title[^>]*>.*?<\/title>/is, `<title>${titleContent}</title>`);
   }
   
-  const outRelPath = determineOutputPath(file);
-  const finalOutPath = join(process.cwd(), '.typx', outRelPath);
+  // outRelPath and finalOutPath are already determined above
   
   await mkdir(dirname(finalOutPath), { recursive: true });
   await writeFile(finalOutPath, finalHtml);
   
-  console.log(`[SUCCESS] Generated ${outRelPath}`);
+  console.log(`\x1b[32m✓\x1b[0m compiled ${file}`);
+  return true;
 }
 
 /**
  * Discovers Typst files and orchestrates the Static Site Generation build process.
  */
 async function buildSSG(): Promise<void> {
-  console.log('[INFO] Starting Typx SSG Build...');
+  const startTime = performance.now();
   
   const cwd = process.cwd();
   const pagesDir = join(cwd, 'src/pages');
@@ -100,16 +136,26 @@ async function buildSSG(): Promise<void> {
   const typFiles = await glob('**/*.typ', { cwd: pagesDir });
   
   if (typFiles.length === 0) {
-    console.log('[INFO] No .typ files found in src/pages.');
+    console.log('\x1b[33m!\x1b[0m no .typ files found in src/pages');
     return;
   }
   
   const tempDir = join(cwd, '.typx', '_temp');
   await mkdir(tempDir, { recursive: true });
 
-  await Promise.all(typFiles.map(file => processTypstFile(file, pagesDir, layoutsDir, tempDir)));
+  const maxSharedMtime = await getMaxSharedMtime(cwd);
+
+  const printedWarnings = new Set<string>();
+  const results = await Promise.all(typFiles.map(file => processTypstFile(file, pagesDir, layoutsDir, tempDir, maxSharedMtime, printedWarnings)));
+  const builtCount = results.filter(Boolean).length;
+  const skippedCount = results.length - builtCount;
+  const timeMs = Math.round(performance.now() - startTime);
   
-  console.log('[SUCCESS] SSG Build Complete!');
+  if (builtCount > 0 || skippedCount > 0) {
+    const builtText = builtCount === 1 ? '1 file' : `${builtCount} files`;
+    const skippedText = skippedCount > 0 ? `, skipped ${skippedCount === 1 ? '1 file' : `${skippedCount} files`}` : '';
+    console.log(`\x1b[32m✓\x1b[0m \x1b[35mtypx\x1b[0m built ${builtText}${skippedText} in ${timeMs}ms`);
+  }
 }
 
 buildSSG().catch(console.error);

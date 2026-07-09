@@ -18,4 +18,4 @@ Edit `src/pages/index.typ` and save to test HMR. This page uses the `default` la
 
 Here is a functional counter:
 
-#typx-counter(class: "btn counter")[Count is 0]
+#typx-counter(class: "btn counter")[Count is 0] 

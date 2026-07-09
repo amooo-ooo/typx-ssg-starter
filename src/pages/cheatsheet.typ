@@ -24,7 +24,6 @@ Typst uses `=` for headings. The number of `=` determines the heading level (H1 
 === H3
 ==== H4
 ===== H5
-====== H6
 ```
 
 #heading(level: 1, outlined: false)[H1]
@@ -32,7 +31,6 @@ Typst uses `=` for headings. The number of `=` determines the heading level (H1 
 #heading(level: 3, outlined: false)[H3]
 #heading(level: 4, outlined: false)[H4]
 #heading(level: 5, outlined: false)[H5]
-#heading(level: 6, outlined: false)[H6]
 
 #divider()
 = Text & Formatting
@@ -175,8 +173,6 @@ Under/Over: $underbrace(x + y, z)$ or $overbrace(a, b)$
 Attach: $x_1^2$ or $scripts(sum)_1^2$
 
 Left/Right Auto-scaling: $lr(( x / y ))$
-
-Cancel: $cancel(x) / cancel(x) = 1$
 
 Styles: $cal(A), frak(B), bb(C)$
 

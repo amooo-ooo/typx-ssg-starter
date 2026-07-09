@@ -9,8 +9,19 @@ const execAsync = promisify(exec);
 const CACHE_DIR = resolve(process.cwd(), '.typx');
 
 const buildTypstFiles = async (file?: string) => {
-  console.log(file ? `[Typx HMR] Detected change in ${file}, rebuilding...` : '[Typx SSG] Building Typst files...');
-  await execAsync('bun scripts/ssg.ts');
+  const prefix = '\x1b[35mtypx\x1b[0m';
+  if (file) {
+    console.log(`${prefix} hmr update ${file}`);
+  }
+  try {
+    const { stdout, stderr } = await execAsync('bun scripts/ssg.ts');
+    if (stdout) console.log(stdout.trim());
+    if (stderr) console.error(stderr.trim());
+  } catch (e: unknown) {
+    const err = e as { stdout?: string | Buffer, stderr?: string | Buffer };
+    if (err && err.stdout) console.log(err.stdout.toString().trim());
+    if (err && err.stderr) console.error(err.stderr.toString().trim());
+  }
 };
 
 export default defineConfig({
