@@ -1,0 +1,4 @@
+{
+  "tinymist.typstExtraArgs": ["--features", "html"],
+  "tinymist.exportTarget": "html"
+}

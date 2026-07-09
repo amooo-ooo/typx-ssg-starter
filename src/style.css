@@ -1,0 +1,443 @@
+/* chore: Core design tokens for better composability. */
+:root {
+  /* Mist Palette (Neutral/True Gray - No Blue) */
+  --mist-50: #fafafa;
+  --mist-100: #f5f5f5;
+  --mist-200: #e5e5e5;
+  --mist-300: #d4d4d4;
+  --mist-400: #a3a3a3;
+  --mist-500: #737373;
+  --mist-600: #525252;
+  --mist-700: #404040;
+  --mist-800: #262626;
+  --mist-900: #171717;
+  --mist-950: #0a0a0a;
+
+  /* Base theme colors */
+  --bg-color: var(--mist-50);
+  --text-color: var(--mist-800);
+  --border-color: var(--mist-200);
+  --strong-color: #000000;
+  --link-color: var(--mist-800);
+  --quote-border: var(--mist-300);
+  --code-bg: var(--mist-100);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: var(--mist-950);
+    --text-color: var(--mist-300);
+    --border-color: var(--mist-800);
+    --strong-color: #ffffff;
+    --link-color: #ffffff;
+    --quote-border: var(--mist-700);
+    --code-bg: var(--mist-900);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  border-color: var(--border-color);
+}
+
+html, body {
+  font-family: 'Hanken Grotesk', serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  line-height: 1.6;
+  font-size: 16px;
+  margin: 0 14rem;
+}
+
+#app {
+  max-width: 95rem;
+  margin: 0 auto;
+  padding: 1.25rem; /* p-5 */
+}
+
+/* Navigation */
+.navbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.navbar a {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--link-color);
+}
+.navbar a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Base Prose Styles */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  scroll-margin-top: 1.25rem;
+  margin-top: 0;
+  color: var(--strong-color);
+}
+
+h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+h2 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  margin-bottom: 1rem;
+}
+h2:nth-of-type(n+2) {
+  margin-top: 2.5rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+h5, h6 {
+  margin-bottom: 1rem;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+ul, ol {
+  padding-inline-start: 2.25rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+ul > li + li, ol > li + li {
+  margin-top: 0.5rem;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol li::marker {
+  color: var(--mist-500);
+}
+
+a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+  color: var(--link-color);
+}
+
+strong {
+  color: var(--strong-color);
+  font-weight: 600;
+}
+
+/* Quotes */
+blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 4px solid var(--quote-border);
+  font-style: italic;
+  color: var(--mist-600);
+}
+@media (prefers-color-scheme: dark) {
+  blockquote {
+    color: var(--mist-400);
+  }
+}
+
+/* Code & Pre */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85em;
+  background-color: var(--mist-200);
+  padding: 0.15em 0.3em;
+  border-radius: 0.25rem;
+  border: none;
+}
+@media (prefers-color-scheme: dark) {
+  code {
+    background-color: var(--mist-800);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+}
+
+pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+pre code {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+  font-size: 0.875em;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.88rem;
+}
+
+th {
+  text-align: left;
+  padding-bottom: 0.5rem;
+  color: var(--strong-color);
+}
+
+td, th {
+  border-bottom: 1px solid var(--border-color);
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+thead + tbody tr:first-child td {
+  padding-top: 0.5rem;
+}
+
+td:first-child, th:first-child {
+  padding-left: 0;
+}
+
+td:last-child, th:last-child {
+  padding-right: 0;
+}
+
+tr:last-child td {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+tr:first-child td {
+  padding-top: 0;
+}
+
+td:has(.typst-frame) {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+/* UI Components (Buttons, Inputs, Badges) */
+button, .btn {
+  appearance: none;
+  margin: 0;
+  line-height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color);
+  background-color: var(--mist-100);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  font-family: inherit;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--mist-200);
+}
+
+button:active, .btn:active {
+  background-color: var(--mist-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  button, .btn {
+    background-color: var(--mist-900);
+  }
+  button:hover, .btn:hover {
+    background-color: var(--mist-800);
+  }
+  button:active, .btn:active {
+    background-color: var(--mist-700);
+  }
+}
+
+input[type="text"], input[type="search"], input[type="email"], textarea, select {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--mist-400);
+}
+
+/* Badges / Tags */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: var(--mist-100);
+  color: var(--mist-700);
+  border: 1px solid var(--border-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge {
+    background-color: var(--mist-800);
+    color: var(--mist-300);
+  }
+}
+
+@media print {
+  body {
+    zoom: 0.8;
+    background-color: white;
+  }
+}
+
+.schema-notes {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+}
+
+
+
+/* Dividers */
+hr, .typst-line {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+/* Figures */
+figure {
+  margin: 1.5rem 0;
+  padding: 0;
+  text-align: center;
+}
+figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--mist-500);
+  margin-top: 0.5rem;
+}
+@media (prefers-color-scheme: dark) {
+  figcaption {
+    color: var(--mist-400);
+  }
+}
+
+/* Footnotes and Refs */
+sup, sub, .typst-footnote, .typst-reference {
+  font-size: 0.75em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+sup, .typst-footnote, .typst-reference {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
+}
+
+/* Text Formatting */
+mark {
+  background-color: rgba(250, 204, 21, 0.4); /* yellow highlight */
+  color: inherit;
+  padding: 0 0.125em;
+  border-radius: 0.125em;
+}
+u {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+s, del {
+  text-decoration: line-through;
+  color: var(--mist-500);
+}
+
+/* Bibliographies */
+.typst-bibliography {
+  margin-top: 2rem;
+}
+
+/* Cheatsheet Layout */
+.cheatsheet-example {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--mist-50);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .cheatsheet-example {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+  }
+  .cheatsheet-code, .cheatsheet-render {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.cheatsheet-code pre {
+  margin: 0;
+  height: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cheatsheet-example {
+    background-color: var(--mist-950);
+  }
+}

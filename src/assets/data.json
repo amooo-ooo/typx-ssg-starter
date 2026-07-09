@@ -1,0 +1,7 @@
+{
+  "title": "Typst Data Example",
+  "items": [
+    { "name": "JSON Support", "type": "Structured" },
+    { "name": "CSV Support", "type": "Tabular" }
+  ]
+}
