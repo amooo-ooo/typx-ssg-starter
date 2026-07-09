@@ -1,10 +1,10 @@
 #import "/src/components/typx.typ": h, meta
-#show: meta.with(title: "Minimal Typx Blog", layout: "default")
+#show: meta.with(title: "Minimal Typx Blog", layout: "blog")
 
 = Building a Typst SSG
 *By Amor, July 2026*
 
-Writing static sites shouldn't require complex frameworks. This blog post demonstrates the `blog` layout.
+Writing static sites shouldn't require complex frameworks. This blog post uses the `blog` layout.
 
 == The Vision
 

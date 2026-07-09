@@ -1,11 +1,11 @@
 # typx-ssg-starter
 
-typx-ssg-starter is a minimal static site generator that combines Typst for document authoring with Vite and Bun for web development. You can author pages in Typst, inject TypeScript Web Components, and wrap the output in standard HTML layouts.
+typx-ssg-starter is a minimal static site generator that combines Typst for document authoring with Vite and Bun for web development. Author pages in Typst with TypeScript Web Components, and wrap the output in standard HTML layouts.
 
 ## Features
 
-- **Typst Authoring**: Write pages using Typst.
-- **Bun & Vite Tooling**: Uses Bun for SSG builds and Vite for the dev server with HMR for `.typ` files.
+- **Typst Authoring**: Write pages with Typst.
+- **Bun & Vite Tooling**: Use Bun for SSG builds and Vite for dev server HMR for `.typ` files.
 - **Web Components**: Inject TypeScript Web Components into Typst files.
 - **SPA Router**: Client-side router that caches DOM trees for navigation without full page reloads.
 - **HTML Layouts**: Render compiled Typst output into HTML shell files via `<slot />`.
@@ -25,7 +25,7 @@ Pages in `src/pages/` are compiled into HTML and mapped to their corresponding U
 The `scripts/ssg.ts` engine uses Bun to compile via `typst compile --format html`. The output goes to the `.typx/` cache directory.
 
 ### Web Components
-The `component` macro in `src/components/typx.typ` allows injecting TypeScript Web Components directly into Typst files, mapping them to HTML custom elements.
+The `component` macro in `src/components/typx.typ` allows injecting TypeScript Web Components directly into Typst files, mapping them to custom HTML elements.
 
 ```typst
 #import "/src/components/typx.typ": component

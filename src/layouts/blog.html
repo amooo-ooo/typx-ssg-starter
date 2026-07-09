@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimal Typx Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,600;0,800;1,400;1,600;1,800&display=swap">
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <nav class="navbar">
+          <a href="/">Home</a>
+          <a href="/cheatsheet">Cheatsheet</a>
+          <a href="/blog/building-typst-ssg">Blog</a>
+          <a href="https://github.com/amooo-ooo/typx-ssg-starter" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </header>
+      <main>
+        <slot />
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

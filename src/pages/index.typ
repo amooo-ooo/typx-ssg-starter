@@ -6,7 +6,7 @@
 
 = Minimal Typx Setup
 
-Welcome to the simplified Typx project. All unnecessary styling   has been removed to leave just the core formatting.
+Welcome to the simplified Typx project. All unnecessary styling has been removed to leave just the core formatting.
 
 == Features
 
@@ -16,6 +16,6 @@ Welcome to the simplified Typx project. All unnecessary styling   has been remov
 
 == Interactive Component
 
-Here is the functional counter button:
+Here is a functional counter button:
 
 #typx-counter(class: "btn counter")[Count is 0]
