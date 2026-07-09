@@ -201,7 +201,7 @@ Typst can natively read JSON, CSV, TOML, YAML, and XML files, allowing you to ge
 
 #divider()
 = Interactive Components
-You can use the `#h("script")` hyperscript component to easily attach inline JavaScript to elements for client-side interactivity.
+You can use the `#h("script")` hyperscript component to easily attach inline JavaScript for client-side interactivity.
 
 #example(scope: (h: h), ```typst
 #let inline-counter(id: "example-counter") = {

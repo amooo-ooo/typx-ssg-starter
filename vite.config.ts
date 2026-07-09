@@ -10,7 +10,7 @@ const CACHE_DIR = resolve(process.cwd(), '.typx');
 
 const buildTypstFiles = async (file?: string) => {
   console.log(file ? `[Typx HMR] Detected change in ${file}, rebuilding...` : '[Typx SSG] Building Typst files...');
-  await execAsync('bun run build:ssg');
+  await execAsync('bun scripts/ssg.ts');
 };
 
 export default defineConfig({
@@ -20,21 +20,22 @@ export default defineConfig({
     typxRouter(),
     {
       name: 'typst-hmr',
+      enforce: 'pre',
       configureServer(server) {
         server.watcher.add([
-          '../src/**/*.typ',
-          '../src/layouts/**/*.html'
+          resolve(process.cwd(), 'src').replace(/\\/g, '/')
         ]);
       },
       async buildStart() {
         await buildTypstFiles();
       },
-      async handleHotUpdate({ file, server }) {
-        if (file.includes('.typx')) return;
-        if (!file.endsWith('.typ') && !(file.endsWith('.html') && file.includes('src/layouts'))) return;
+      async handleHotUpdate({ file, server, modules }) {
+        if (file.includes('.typx')) return [];
+        if (!file.endsWith('.typ') && !(file.endsWith('.html') && (file.includes('src/layouts') || file.includes('src\\layouts')))) return;
         
         await buildTypstFiles(file);
         server.ws.send({ type: 'custom', event: 'typx:hmr' });
+        return [];
       }
     }
   ],
@@ -43,6 +44,11 @@ export default defineConfig({
     alias: {
       '/src': resolve(process.cwd(), 'src'),
       '/scripts': resolve(process.cwd(), 'scripts'),
+    }
+  },
+  server: {
+    watch: {
+      ignored: (p) => p.includes('.typx') && !p.includes('node_modules')
     }
   },
   build: {

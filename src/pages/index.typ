@@ -4,9 +4,9 @@
 
 #let typx-counter = component("/src/components/counter.ts", "typx-counter")
 
-= Minimal Typx Setup
+= Get started
 
-Welcome to the simplified Typx project. All unnecessary styling has been removed to leave just the core formatting.
+Edit `src/pages/index.typ` and save to test HMR. This page uses the `default` layout.
 
 == Features
 
@@ -16,6 +16,6 @@ Welcome to the simplified Typx project. All unnecessary styling has been removed
 
 == Interactive Component
 
-Here is a functional counter button:
+Here is a functional counter:
 
 #typx-counter(class: "btn counter")[Count is 0]

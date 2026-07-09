@@ -12,7 +12,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:ssg": "bun run scripts/ssg.ts",
     "preview": "vite preview",
     "deploy": "wrangler pages deploy dist"
   },

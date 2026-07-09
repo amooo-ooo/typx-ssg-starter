@@ -61,7 +61,6 @@ bun run dev
 
 Build the static site for production:
 ```bash
-bun run build:ssg
 bun run build
 ```
 
