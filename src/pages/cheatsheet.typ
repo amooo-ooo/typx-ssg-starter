@@ -105,7 +105,7 @@ Use `#figure` wrapping our custom `#h("img")` element to display images with cap
 
 #divider()
 = Tables
-The `#table` function creates highly customizable tables. You can map dynamic fill colors to coordinates.
+The `#table` function creates tables. 
 
 #example(```typst
 #table(
