@@ -3,6 +3,7 @@ import { globSync } from 'glob';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { typxRouter } from './scripts/vite-plugin-typx-router';
 
 const execAsync = promisify(exec);
@@ -27,8 +28,24 @@ const buildTypstFiles = async (file?: string) => {
 export default defineConfig({
   root: '.typx',
   base: './',
+  publicDir: resolve(process.cwd(), 'public'),
   plugins: [
     typxRouter(),
+    {
+      name: 'copy-typ-files',
+      apply: 'build',
+      generateBundle() {
+        const typFiles = globSync('**/*.typ', { cwd: resolve(process.cwd(), 'src/pages') });
+        for (const file of typFiles) {
+          const source = readFileSync(resolve(process.cwd(), 'src/pages', file));
+          this.emitFile({
+            type: 'asset',
+            fileName: file.replace(/\\/g, '/'),
+            source,
+          });
+        }
+      }
+    },
     {
       name: 'typst-hmr',
       enforce: 'pre',
