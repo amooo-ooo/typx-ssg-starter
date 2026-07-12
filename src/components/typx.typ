@@ -40,7 +40,7 @@
 
 #let component(ts-path, element-name) = {
   (..args) => {
-    h("script", type: "module", "import '" + ts-path + "';")
+    h("script", type: "module", "import('" + ts-path + "');")
     h(element-name, ..args.named())[#args.pos().join()]
   }
 }

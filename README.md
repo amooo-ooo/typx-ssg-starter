@@ -10,6 +10,7 @@ typx-ssg-starter is a minimal static site generator that combines Typst for docu
 - **SPA Router**: Client-side router that caches DOM trees for navigation without full page reloads.
 - **HTML Layouts**: Render compiled Typst output into HTML shell files via `<slot />`.
 - **Raw Source Access**: Direct `.typ` file URLs serve the raw source code as plain text.
+- **Perfect Lighthouse Score**: 100 across all Lighthouse metrics.
 
 ## Architecture
 

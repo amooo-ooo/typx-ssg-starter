@@ -146,7 +146,7 @@ async function processTypstFile(
   await mkdir(dirname(finalOutPath), { recursive: true });
   await writeFile(finalOutPath, finalHtml);
 
-  console.log(`\x1b[32m[OK]\x1b[0m compiled ${file}`);
+  console.log(`\x1b[32m✓\x1b[0m compiled ${file}`);
   return true;
 }
 
@@ -162,7 +162,7 @@ async function buildSSG(): Promise<void> {
   const typFiles = await glob("**/*.typ", { cwd: pagesDir });
 
   if (typFiles.length === 0) {
-    console.log("\x1b[33m[WARN]\x1b[0m no .typ files found in src/pages");
+    console.log("\x1b[33m⚠\x1b[0m no .typ files found in src/pages");
     return;
   }
 
@@ -207,7 +207,7 @@ async function buildSSG(): Promise<void> {
         ? `, skipped ${skippedCount === 1 ? "1 file" : `${skippedCount} files`}`
         : "";
     console.log(
-      `\x1b[32m[OK]\x1b[0m \x1b[35mtypx\x1b[0m built ${builtText}${skippedText} in ${timeMs}ms`,
+      `\x1b[32m✓\x1b[0m \x1b[35mtypx\x1b[0m built ${builtText}${skippedText} in ${timeMs}ms`,
     );
   }
 }
