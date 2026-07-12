@@ -3,14 +3,14 @@ export class TypxCounter extends HTMLElement {
 
   constructor() {
     super();
-    this.addEventListener('click', this.handleClick.bind(this));
+    this.addEventListener("click", this.handleClick.bind(this));
   }
 
   connectedCallback() {
-    this.setAttribute('role', 'button');
+    this.setAttribute("role", "button");
     this.tabIndex = 0;
-    if (!this.classList.contains('counter')) {
-      this.classList.add('counter');
+    if (!this.classList.contains("counter")) {
+      this.classList.add("counter");
     }
     this.render();
   }
@@ -25,6 +25,6 @@ export class TypxCounter extends HTMLElement {
   }
 }
 
-if (!customElements.get('typx-counter')) {
-  customElements.define('typx-counter', TypxCounter);
+if (!customElements.get("typx-counter")) {
+  customElements.define("typx-counter", TypxCounter);
 }

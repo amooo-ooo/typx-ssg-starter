@@ -1,7 +1,7 @@
-import { TypxRouter } from './core';
-import type { RouterOptions } from './core';
+import { TypxRouter } from "./core";
+import type { RouterOptions } from "./core";
 
-export { onNavigate, onPrefetch, onMount } from './hooks';
+export { onNavigate, onPrefetch, onMount } from "./hooks";
 
 let instance: TypxRouter | null = null;
 
@@ -10,7 +10,9 @@ let instance: TypxRouter | null = null;
  */
 export function createRouter(options?: RouterOptions): TypxRouter {
   if (instance) {
-    console.warn('TypxRouter already initialised. Returning the existing instance.');
+    console.warn(
+      "TypxRouter already initialised. Returning the existing instance.",
+    );
     return instance;
   }
   instance = new TypxRouter(options);
@@ -22,7 +24,7 @@ export function createRouter(options?: RouterOptions): TypxRouter {
  */
 export function useRouter(): TypxRouter {
   if (!instance) {
-    throw new Error('Router not initialised. Call createRouter() first.');
+    throw new Error("Router not initialised. Call createRouter() first.");
   }
   return instance;
 }

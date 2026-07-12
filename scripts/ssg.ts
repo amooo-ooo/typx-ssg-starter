@@ -1,12 +1,16 @@
-import { glob } from 'glob';
-import { mkdir, readFile, writeFile, stat } from 'fs/promises';
-import { join, dirname, basename } from 'path';
-import { $ } from 'bun';
+import { glob } from "glob";
+import { mkdir, readFile, writeFile, stat, rm } from "fs/promises";
+import { join, dirname, basename } from "path";
+import { $ } from "bun";
 
 async function getMaxSharedMtime(cwd: string): Promise<number> {
-  const sharedFiles = await glob('src/**/*', { cwd, nodir: true, ignore: 'src/pages/**/*' });
+  const sharedFiles = await glob("src/**/*", {
+    cwd,
+    nodir: true,
+    ignore: "src/pages/**/*",
+  });
   const stats = await Promise.all(
-    sharedFiles.map(file => stat(join(cwd, file)).catch(() => null))
+    sharedFiles.map((file) => stat(join(cwd, file)).catch(() => null)),
   );
   return stats.reduce((max: number, s) => Math.max(max, s?.mtimeMs ?? 0), 0);
 }
@@ -21,15 +25,21 @@ function extractBodyContent(html: string): string {
 /**
  * Resolves the layout HTML string for a given document content.
  */
-async function getLayoutHtml(layoutsDir: string, content: string): Promise<string> {
+async function getLayoutHtml(
+  layoutsDir: string,
+  content: string,
+): Promise<string> {
   // Support #show: meta.with(..., layout: "layoutName", ...)
-  const setDocMatch = content.match(/#show:\s*meta\.with\s*\([^)]*layout\s*:\s*"([^"]+)"[^)]*\)/);
-  const layoutName = setDocMatch?.[1] ?? 'default';
+  const setDocMatch = content.match(
+    /#show:\s*meta\.with\s*\([^)]*layout\s*:\s*"([^"]+)"[^)]*\)/,
+  );
+  const rawLayoutName = setDocMatch?.[1] ?? "default";
+  const layoutName = basename(rawLayoutName);
 
   const layoutPath = join(layoutsDir, `${layoutName}.html`);
-  
+
   try {
-    return await readFile(layoutPath, 'utf-8');
+    return await readFile(layoutPath, "utf-8");
   } catch (error) {
     console.error(`[ERROR] Layout not found: ${layoutPath}`);
     throw error;
@@ -40,61 +50,74 @@ async function getLayoutHtml(layoutsDir: string, content: string): Promise<strin
  * Determines the output path for a compiled HTML file based on its source path.
  */
 function determineOutputPath(file: string): string {
-  const name = basename(file, '.typ');
+  const name = basename(file, ".typ");
   const dir = dirname(file);
-  if (name === 'index') {
-    return join(dir === '.' ? '' : dir, 'index.html');
+  if (name === "index") {
+    return join(dir === "." ? "" : dir, "index.html");
   }
-  return join(dir === '.' ? '' : dir, `${name}.html`);
+  return join(dir === "." ? "" : dir, `${name}.html`);
 }
 
 /**
  * Processes a single Typst file by compiling it and injecting it into the layout.
  */
-async function processTypstFile(file: string, pagesDir: string, layoutsDir: string, tempDir: string, maxSharedMtime: number = 0, printedWarnings: Set<string>): Promise<boolean> {
+async function processTypstFile(
+  file: string,
+  pagesDir: string,
+  layoutsDir: string,
+  tempDir: string,
+  maxSharedMtime: number = 0,
+  printedWarnings: Set<string>,
+): Promise<boolean> {
   const srcPath = join(pagesDir, file);
   const outRelPath = determineOutputPath(file);
-  const finalOutPath = join(process.cwd(), '.typx', outRelPath);
-  
+  const finalOutPath = join(process.cwd(), ".typx", outRelPath);
+
   try {
     const srcStat = await stat(srcPath);
     const outStat = await stat(finalOutPath);
-    
-    if (outStat.mtimeMs >= srcStat.mtimeMs && outStat.mtimeMs >= maxSharedMtime) {
+
+    if (
+      outStat.mtimeMs >= srcStat.mtimeMs &&
+      outStat.mtimeMs >= maxSharedMtime
+    ) {
       return false;
     }
   } catch {
     // Proceed if output file doesn't exist
   }
 
-  const content = await readFile(srcPath, 'utf-8');
-  
+  const content = await readFile(srcPath, "utf-8");
+
   let layoutHtml: string;
   try {
     layoutHtml = await getLayoutHtml(layoutsDir, content);
   } catch {
     return false;
   }
-  
-  const tempOutPath = join(tempDir, `${file.replace(/[/\\]/g, '_')}.html`);
+
+  const tempOutPath = join(tempDir, `${file.replace(/[/\\]/g, "_")}.html`);
   // No compiling log, just output success at the end
-  
+
   try {
-    const result = await $`typst compile --root ${process.cwd()} --format html --features html --input is_html=true ${srcPath} ${tempOutPath}`.quiet();
-    
+    const result =
+      await $`typst compile --root ${process.cwd()} --format html --features html --input is_html=true ${srcPath} ${tempOutPath}`.quiet();
+
     if (result.stderr) {
-      const stderrStr = result.stderr.toString().replace(/\\\\\?\\/g, '');
+      const stderrStr = result.stderr.toString().replace(/\\\\\?\\/g, "");
       const warnings = stderrStr.split(/\n\s*\n/);
       for (const warning of warnings) {
         const trimmed = warning.trim();
         if (trimmed && !printedWarnings.has(trimmed)) {
           printedWarnings.add(trimmed);
-          console.error(trimmed + '\n');
+          console.error(trimmed + "\n");
         }
       }
     }
   } catch (error: unknown) {
-    console.error(`[ERROR] Typst compilation failed for ${file}. Ensure 'typst' is installed and on your PATH.`);
+    console.error(
+      `[ERROR] Typst compilation failed for ${file}. Ensure 'typst' is installed and on your PATH.`,
+    );
     const err = error as { stderr?: string | Buffer };
     if (err && err.stderr) {
       console.error(err.stderr.toString().trim());
@@ -103,24 +126,27 @@ async function processTypstFile(file: string, pagesDir: string, layoutsDir: stri
     }
     return false;
   }
-  
-  const typstHtml = await readFile(tempOutPath, 'utf-8');
+
+  const typstHtml = await readFile(tempOutPath, "utf-8");
   const bodyContent = extractBodyContent(typstHtml);
   let finalHtml = layoutHtml.replace(/<slot\s*\/?>(<\/slot>)?/, bodyContent);
-  
+
   // Extract the title generated by Typst (if any) and inject it into the layout
   const titleMatch = typstHtml.match(/<title[^>]*>(.*?)<\/title>/is);
   if (titleMatch) {
     const titleContent = titleMatch[1];
-    finalHtml = finalHtml.replace(/<title[^>]*>.*?<\/title>/is, `<title>${titleContent}</title>`);
+    finalHtml = finalHtml.replace(
+      /<title[^>]*>.*?<\/title>/is,
+      `<title>${titleContent}</title>`,
+    );
   }
-  
+
   // outRelPath and finalOutPath are already determined above
-  
+
   await mkdir(dirname(finalOutPath), { recursive: true });
   await writeFile(finalOutPath, finalHtml);
-  
-  console.log(`\x1b[32m✓\x1b[0m compiled ${file}`);
+
+  console.log(`\x1b[32m[OK]\x1b[0m compiled ${file}`);
   return true;
 }
 
@@ -129,32 +155,60 @@ async function processTypstFile(file: string, pagesDir: string, layoutsDir: stri
  */
 async function buildSSG(): Promise<void> {
   const startTime = performance.now();
-  
+
   const cwd = process.cwd();
-  const pagesDir = join(cwd, 'src/pages');
-  const layoutsDir = join(cwd, 'src/layouts');
-  const typFiles = await glob('**/*.typ', { cwd: pagesDir });
-  
+  const pagesDir = join(cwd, "src/pages");
+  const layoutsDir = join(cwd, "src/layouts");
+  const typFiles = await glob("**/*.typ", { cwd: pagesDir });
+
   if (typFiles.length === 0) {
-    console.log('\x1b[33m!\x1b[0m no .typ files found in src/pages');
+    console.log("\x1b[33m[WARN]\x1b[0m no .typ files found in src/pages");
     return;
   }
-  
-  const tempDir = join(cwd, '.typx', '_temp');
+
+  const tempDir = join(cwd, ".typx", "_temp");
   await mkdir(tempDir, { recursive: true });
 
   const maxSharedMtime = await getMaxSharedMtime(cwd);
 
+  // Clean up stale HTML files in .typx (orphaned files that no longer have a .typ source)
+  const existingHtmlFiles = await glob("**/*.html", {
+    cwd: join(cwd, ".typx"),
+    ignore: "_temp/**",
+  });
+  const expectedHtmlFiles = new Set(typFiles.map(determineOutputPath));
+  for (const htmlFile of existingHtmlFiles) {
+    if (!expectedHtmlFiles.has(htmlFile)) {
+      await rm(join(cwd, ".typx", htmlFile)).catch(() => {});
+    }
+  }
+
   const printedWarnings = new Set<string>();
-  const results = await Promise.all(typFiles.map(file => processTypstFile(file, pagesDir, layoutsDir, tempDir, maxSharedMtime, printedWarnings)));
+  const results = await Promise.all(
+    typFiles.map((file) =>
+      processTypstFile(
+        file,
+        pagesDir,
+        layoutsDir,
+        tempDir,
+        maxSharedMtime,
+        printedWarnings,
+      ),
+    ),
+  );
   const builtCount = results.filter(Boolean).length;
   const skippedCount = results.length - builtCount;
   const timeMs = Math.round(performance.now() - startTime);
-  
+
   if (builtCount > 0 || skippedCount > 0) {
-    const builtText = builtCount === 1 ? '1 file' : `${builtCount} files`;
-    const skippedText = skippedCount > 0 ? `, skipped ${skippedCount === 1 ? '1 file' : `${skippedCount} files`}` : '';
-    console.log(`\x1b[32m✓\x1b[0m \x1b[35mtypx\x1b[0m built ${builtText}${skippedText} in ${timeMs}ms`);
+    const builtText = builtCount === 1 ? "1 file" : `${builtCount} files`;
+    const skippedText =
+      skippedCount > 0
+        ? `, skipped ${skippedCount === 1 ? "1 file" : `${skippedCount} files`}`
+        : "";
+    console.log(
+      `\x1b[32m[OK]\x1b[0m \x1b[35mtypx\x1b[0m built ${builtText}${skippedText} in ${timeMs}ms`,
+    );
   }
 }
 

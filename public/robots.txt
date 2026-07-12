@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://typx-ssg-starter.pages.dev/sitemap.xml
